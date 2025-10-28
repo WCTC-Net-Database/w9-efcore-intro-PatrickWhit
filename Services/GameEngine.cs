@@ -43,4 +43,79 @@ public class GameEngine
             Console.WriteLine("No characters available.");
         }
     }
+
+    public void AddRoom()
+    {
+        Console.Write("Enter room name: ");
+        var name = Console.ReadLine();
+
+        Console.Write("Enter room description: ");
+        var description = Console.ReadLine();
+
+        var room = new Room
+        {
+            Name = name,
+            Description = description
+        };
+
+        _context.Rooms.Add(room);
+        _context.SaveChanges();
+
+        Console.WriteLine($"Room '{name}' added to the game.");
+    }
+
+    public void AddCharacter()
+    {
+        Console.Write("Enter character name: ");
+        var name = Console.ReadLine();
+
+        Console.Write("Enter character level: ");
+        var level = int.Parse(Console.ReadLine());
+
+        Console.Write("Enter room ID for the character: ");
+        var roomId = int.Parse(Console.ReadLine());
+
+        // TODO Add character to the room
+        // Find the room by ID
+        var foundRoomId = _context.Rooms.FirstOrDefault(room => room.Id == roomId);
+        // If the room doesn't exist, return
+        if (foundRoomId == null)
+        {
+            return;
+        }
+        // Otherwise, create a new character and add it to the room
+        var character = new Character
+        {
+            Name = name,
+            Level = level,
+            RoomId = roomId
+        };
+        // Save the changes to the database
+        _context.Characters.Add(character);
+        _context.SaveChanges();
+    }
+
+    public void FindCharacter()
+    {
+        Console.Write("Enter character name to search: ");
+        var name = Console.ReadLine();
+
+        // TODO Find the character by name
+        // Use LINQ to query the database for the character
+        var foundCharacter = _context.Characters.FirstOrDefault(character => character.Name.Contains(name!));
+        // If the character exists, display the character's information
+        if (foundCharacter != null) {
+            var CharacterRoomId = foundCharacter.RoomId;
+            var RoomName = _context.Rooms.FirstOrDefault(room => room.Id == CharacterRoomId);
+
+            Console.WriteLine($"Character Name: {foundCharacter.Name}," +
+                $"Character Level: {foundCharacter.Level}," +
+                $"Character Room: {RoomName!.Name}"); 
+        }
+        // Otherwise, display a message indicating the character was not found
+        else
+        {
+            Console.WriteLine("No character was found.");
+        }
+    }
 }
